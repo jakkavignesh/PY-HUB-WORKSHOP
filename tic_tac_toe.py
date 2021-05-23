@@ -44,7 +44,7 @@ def draw_status():
     else:
         message=winner.upper()+"  Won the game!"
     if draw:
-        message="Game Draw!"
+        message="Uff Game Draw!"
 
     font = pygame.font.Font(None, 30)
 
