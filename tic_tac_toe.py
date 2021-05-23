@@ -1,195 +1,162 @@
-import pygame as pg,sys
+import pygame
 from pygame.locals import *
+import sys
 import time
 
 
-XO = 'x'
-winner = None
-draw = False
-width = 400
-height = 400
-white = (255, 255, 255)
-line_color = (10,10,10)
+board=[[None]*3,[None]*3,[None]*3]
+XO='x'
+winner=None
+draw=None
+width=300
+height=300
+line_color=(0,0,0)
+white=(255,255,255)
+pygame.init()
 
+screen = pygame.display.set_mode((width, height + 100))
+pygame.display.set_caption("TIC TAC TOE Using PYGAME")
+#print(pygame.display.Info())
+initaiting_window = pygame.image.load("C:/Users/LENOVO/Desktop/tic tac opening.png")
+initaiting_window = pygame.transform.scale(initaiting_window, ((width, height + 100)))
+x_img = pygame.image.load("C:/Users/LENOVO/Desktop/X.png")
+o_img = pygame.image.load("C:/Users/LENOVO/Desktop/O.png")
+x_img = pygame.transform.scale(x_img, (60, 60))
+o_img = pygame.transform.scale(o_img, (60, 60))
 
-TTT = [[None]*3,[None]*3,[None]*3]
-
-
-pg.init()
-fps = 30
-CLOCK = pg.time.Clock()
-screen = pg.display.set_mode((width, height+100),0,32)
-pg.display.set_caption("Tic Tac Toe")
-
-
-opening = pg.image.load('C:/Users/LENOVO/Desktop/tic tac opening.png')
-x_img = pg.image.load('C:/Users/LENOVO/Desktop/X.png')
-o_img = pg.image.load('C:/Users/LENOVO/Desktop/O.png')
-
-
-x_img = pg.transform.scale(x_img, (80,80))
-o_img = pg.transform.scale(o_img, (80,80))
-opening = pg.transform.scale(opening, (width, height+100))
-
-
-def game_opening():
-    screen.blit(opening,(0,0))
-    pg.display.update()
-    time.sleep(1)
+def game_initiating_window():
+    screen.blit(initaiting_window, (0, 0))
+    pygame.display.update()
+    time.sleep(3)
     screen.fill(white)
-    
-    # Drawing vertical lines
-    pg.draw.line(screen,line_color,(width/3,0),(width/3, height),7)
-    pg.draw.line(screen,line_color,(width/3*2,0),(width/3*2, height),7)
-    # Drawing horizontal lines
-    pg.draw.line(screen,line_color,(0,height/3),(width, height/3),7)
-    pg.draw.line(screen,line_color,(0,height/3*2),(width, height/3*2),7)
+    pygame.draw.line(screen, line_color, (width / 3, 0), (width / 3, height), 5)
+    pygame.draw.line(screen, line_color, (width / 3 * 2, 0), (width / 3 * 2, height), 5)
+    pygame.draw.line(screen, line_color, (0, height / 3), (width, height / 3), 5)
+    pygame.draw.line(screen, line_color, (0, height / 3 * 2), (width, height / 3 * 2), 5)
+    pygame.display.update()
+    #time.sleep(10)
     draw_status()
-    
 
 def draw_status():
-    global draw
-
+    global draw,winner
     if winner is None:
-        message = XO.upper() + "'s Turn"
+        message=XO.upper()+"'s turn"
     else:
-        message = winner.upper() + " won!"
+        message=winner.upper()+"  Won the game!"
     if draw:
-        message = 'Game Draw!'
+        message="Game Draw!"
 
-    font = pg.font.Font(None, 30)
+    font = pygame.font.Font(None, 30)
+
     text = font.render(message, 1, (255, 255, 255))
 
-    
-    screen.fill ((0, 0, 0), (0, 400, 500, 100))
-    text_rect = text.get_rect(center=(width/2, 500-50))
+    screen.fill((0, 0, 0), (0, 300, 300, 100))
+    text_rect = text.get_rect(center=(width / 2, 350))
     screen.blit(text, text_rect)
-    pg.display.update()
+    pygame.display.update()
+    time.sleep(1)
+
 
 def check_win():
-    global TTT, winner,draw
-
-    
-    for row in range (0,3):
-        if ((TTT [row][0] == TTT[row][1] == TTT[row][2]) and(TTT [row][0] is not None)):
-            
-            winner = TTT[row][0]
-            pg.draw.line(screen, (250,0,0), (0, (row + 1)*height/3 -height/6),\
-                              (width, (row + 1)*height/3 - height/6 ), 4)
+    global winner,draw,board
+    for row in range(0, 3):
+        if ((board[row][0] == board[row][1] == board[row][2]) and (board[row][0] != None)):
+            winner = board[row][0]
+            pygame.draw.line(screen, (250, 0, 0),
+                         (0, (row + 1) * height / 3 - height / 6),
+                         (width, (row + 1) * height / 3 - height / 6),
+                         4)
             break
 
-    
-    for col in range (0, 3):
-        if (TTT[0][col] == TTT[1][col] == TTT[2][col]) and (TTT[0][col] is not None):
-            
-            winner = TTT[0][col]
-            
-            pg.draw.line (screen, (250,0,0),((col + 1)* width/3 - width/6, 0),\
-                          ((col + 1)* width/3 - width/6, height), 4)
+    for col in range(0, 3):
+        if ((board[0][col] == board[1][col] == board[2][col]) and (board[0][col] is not None)):
+            winner = board[0][col]
+            pygame.draw.line(screen, (250, 0, 0), ((col + 1) * width / 3 - width / 6, 0),
+                         ((col + 1) * width / 3 - width / 6, height),5)
             break
 
-    
-    if (TTT[0][0] == TTT[1][1] == TTT[2][2]) and (TTT[0][0] is not None):
-        
-        winner = TTT[0][0]
-        pg.draw.line (screen, (250,70,70), (50, 50), (350, 350), 4)
-       
+    if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] is not None):
+        winner = board[0][0]
+        pygame.draw.line(screen, (250, 70, 70), (20,20), (300, 300), 4)
 
-    if (TTT[0][2] == TTT[1][1] == TTT[2][0]) and (TTT[0][2] is not None):
-        
-        winner = TTT[0][2]
-        pg.draw.line (screen, (250,70,70), (350, 50), (50, 350), 4)
-    
-    if(all([all(row) for row in TTT]) and winner is None ):
+    elif (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] is not None):
+        winner = board[0][2]
+        pygame.draw.line(screen, (250, 70, 70), (20,280),(280,20), 4)
+
+    elif (all([all(row) for row in board]) and winner is None):
         draw = True
     draw_status()
 
-
 def drawXO(row,col):
-    global TTT,XO
-    if row==1:
-        posx = 30
-    if row==2:
-        posx = width/3 + 30
-    if row==3:
-        posx = width/3*2 + 30
-
-    if col==1:
-        posy = 30
-    if col==2:
-        posy = height/3 + 30
-    if col==3:
-        posy = height/3*2 + 30
-    TTT[row-1][col-1] = XO
-    if(XO == 'x'):
-        screen.blit(x_img,(posy,posx))
-        XO= 'o'
+    global XO
+    if(row==1):
+        posy=25
+    if(row==2):
+        posy=height/3+25
+    if(row==3):
+        posy=height/3*2+25
+    if(col==1):
+        posx=25
+    if(col==2):
+        posx=width/3+25
+    if(col==3):
+        posx=width/3*2+25
+    board[row-1][col-1]=XO
+    if(XO=='x'):
+        screen.blit(x_img,(posx,posy))
+        XO='o'
     else:
-        screen.blit(o_img,(posy,posx))
-        XO= 'x'
-    pg.display.update()
-    
-   
-    
+        screen.blit(o_img,(posx,posy))
+        XO='x'
+    pygame.display.update()
 
-def userClick():
-    
-    x,y = pg.mouse.get_pos()
 
-    
-    if(x<width/3):
-        col = 1
-    elif (x<width/3*2):
-        col = 2
-    elif(x<width):
-        col = 3
-    else:
-        col = None
-        
-    
-    if(y<height/3):
-        row = 1
-    elif (y<height/3*2):
-        row = 2
-    elif(y<height):
-        row = 3
-    else:
-        row = None
-    
-    
 
-    if(row and col and TTT[row-1][col-1] is None):
+def user_click():
+    x,y=pygame.mouse.get_pos()
+    if x<width/3:
+        col=1
+    if (x<width/3*2 and x>width/3):
+        col=2
+    if (x<width and x>width/3*2):
+        col=3
+    if x>width:
+        col=None
+    if y<height/3:
+        row=1
+    if (y<height/3*2 and y>height/3):
+        row=2
+    if (y<height and y>height/3*2):
+        row=3
+    if y>height:
+        row=None
+    print("x=",x," y=",y)
+    print("row=",row," col=",col )
+    if(row and col and (board[row-1][col-1] is None)):
         global XO
-        
-        
         drawXO(row,col)
         check_win()
-        
-        
-
 def reset_game():
-    global TTT, winner,XO, draw
-    time.sleep(3)
-    XO = 'x'
-    draw = False
-    game_opening()
+    global board,XO,draw,winner
+    board=[[None]*3,[None]*3,[None]*3]
+    X0='x'
     winner=None
-    TTT = [[None]*3,[None]*3,[None]*3]
-    
+    draw=False
+    time.sleep(3)
+    game_initiating_window()
 
-game_opening()
 
 
+game_initiating_window()
 while(True):
-    for event in pg.event.get():
-        if event.type == QUIT:
-            pg.quit()
+    for event in pygame.event.get():
+        #print(event.type)
+        if event.type== QUIT:
+            pygame.quit()
             sys.exit()
-        elif event.type == MOUSEBUTTONDOWN:
-        
-            userClick()
+        elif event.type==MOUSEBUTTONDOWN:
+            user_click()
             if(winner or draw):
                 reset_game()
-            
-    pg.display.update()
-    CLOCK.tick(fps)
+
+    pygame.display.update()
